@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - IQDeals</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f3f6; color: #333; transition: background 0.3s, color 0.3s; }
+        * { box-sizing: border-box; }
+
+        body.dark-mode { background-color: #121212 !important; color: #e0e0e0 !important; }
+        body.dark-mode header, 
+        body.dark-mode .container, 
+        body.dark-mode .product-card, 
+        body.dark-mode .bottom-nav {
+            background-color: #1e1e1e !important; color: #fff !important; border-color: #333 !important;
+        }
+        body.dark-mode .page-title, body.dark-mode .product-name, body.dark-mode .current-price, body.dark-mode .back-btn { color: #fff !important; }
+        body.dark-mode .product-desc { color: #aaa !important; }
+
+        header { background: #fff; padding: 12px 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        .back-btn { font-size: 18px; color: #333; text-decoration: none; cursor: pointer; }
+        .page-title { font-size: 18px; font-weight: bold; }
+
+        .container { padding: 15px; max-width: 1200px; margin: 0 auto; padding-bottom: 70px; min-height: calc(100vh - 60px); }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 10px; }
+        
+        .product-card { background: #fff; padding: 10px; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #e0e0e0; border-radius: 6px; }
+        .badge { position: absolute; top: 8px; left: 8px; background: #ff4757; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 3px; font-weight: bold; z-index: 2; }
+        
+        .wishlist-btn {
+            position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9);
+            border: none; border-radius: 50%; width: 28px; height: 28px; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; z-index: 2; font-size: 14px; color: #ff4757;
+        }
+
+        .product-card img { width: 100%; height: 110px; object-fit: contain; margin: 8px 0; cursor: pointer; }
+        .product-name { font-size: 13px; font-weight: 600; color: #212121; margin-bottom: 2px; text-decoration: none; display: block; cursor: pointer; }
+        .product-desc { font-size: 11px; color: #878787; margin-bottom: 6px; }
+        .price-box { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+        .current-price { font-size: 13px; font-weight: bold; color: #212121; }
+        .old-price { font-size: 10px; color: #878787; text-decoration: line-through; }
+        .discount { font-size: 10px; color: #388e3c; font-weight: bold; }
+        .buy-btn { display: block; width: 100%; background: #2874f0; color: #fff; text-align: center; padding: 6px; border-radius: 3px; text-decoration: none; font-weight: 600; font-size: 11px; cursor: pointer; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 8px 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.05); z-index: 1000; }
+        .nav-item { text-align: center; text-decoration: none; color: #878787; font-size: 10px; cursor: pointer; }
+        .nav-item i { font-size: 18px; display: block; margin-bottom: 2px; }
+        .nav-item.active { color: #2874f0; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); }
+    </script>
+
+    <header>
+        <a onclick="window.location.replace('index.html')" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="page-title">My Wishlist</div>
+    </header>
+
+    <div class="container">
+        <div class="products-grid" id="wishlistContainer"></div>
+    </div>
+
+    <div class="bottom-nav">
+        <a onclick="window.location.replace('index.html')" class="nav-item"><i class="fa-solid fa-house"></i>Home</a>
+        <a onclick="window.location.replace('all-products.html')" class="nav-item"><i class="fa-solid fa-layer-group"></i>Categories</a>
+        <a onclick="window.location.replace('wishlist.html')" class="nav-item active"><i class="fa-solid fa-heart"></i>Wishlist</a>
+        <a onclick="window.location.replace('setting.html')" class="nav-item"><i class="fa-solid fa-gear"></i>Settings</a>
+    </div>
+
+    <script>
+        const defaultProducts = [
+            { id: 1, name: "allons TWS Earbuds", category: "Earphones", desc: "Wireless Earbuds", currPrice: "₹299", oldPrice: "₹1,500", discount: "60% off", image: "twn.jpg", link: "https://fktr.in/4d0N4zs", badge: "Trending", specs: ["Bluetooth Version: v5.3", "Battery Playtime: Up to 30 Hours", "Charging Type: Type-C Fast Charging", "Water Resistance: IPX4 Splash Proof"] },
+            { id: 2, name: "Oppo K14x 5G", category: "Smartphones", desc: "6GB RAM | 128GB Storage", currPrice: "₹22,999", oldPrice: "₹25,000", discount: "20% off", image: "Oppo.jpg", link: "https://fktr.in/jTC88j9", badge: "Best Seller", specs: ["Display: 6.72 inch FHD+ Display", "RAM & Storage: 6GB RAM | 128GB ROM", "Processor: MediaTek Dimensity 6300 5G", "Battery: 6500mAh with 45W Fast Charge"] },
+            { id: 3, name: "Genuine Leather Jacket", category: "Fesion", desc: "For premium men", currPrice: "₹999", oldPrice: "₹1,999", discount: "50% off", image: "Jacket.jpg", link: "#", badge: "Trending", specs: ["Material: 100% Pure Leather", "Fit Type: Regular Fit", "Sleeve Type: Long Sleeve", "Occasion: Casual & Biker Style"] },
+            { id: 4, name: "NIKE PRECISION 8", category: "Fesion", desc: "Basketball Shoes For Men", currPrice: "₹3,990", oldPrice: "₹4,800", discount: "28% off", image: "Sho.jpg", link: "#", badge: "Best Seller", specs: ["Sole Material: Rubber Grip Sole", "Closure: Lace-Up", "Ideal For: Basketball & Running", "Color: Black / Red"] },
+            { id: 5, name: "Lenovo AMD Ryzen 7 7735HS", category: "Laptops", desc: "16 GB/512 GB SSD/Win 11", currPrice: "₹95,990", oldPrice: "₹1,66,892", discount: "42% off", image: "Laptop.jpg", link: "#", badge: "Best Seller", specs: ["Processor: AMD Ryzen 7 7735HS", "RAM & Storage: 16 GB RAM / 512 GB SSD", "Operating System: Windows 11 Home with MS Office", "Display & Weight: 14 inch | Graphite Black | 1.42 kg"] },
+            { id: 6, name: "Smart Fitness Watch", category: "Smartwatches", desc: "Fitness Tracking Smartwatch", currPrice: "₹1,999", oldPrice: "₹3,999", discount: "50% off", image: "Watch.jpg", link: "#", badge: "Trending", specs: ["Display: 1.83 inch HD Touch Screen", "Health Tracking: Heart Rate & SpO2", "Battery Life: Up to 7 Days Backup", "Connectivity: Bluetooth Calling Support"] },
+            { id: 7, name: "Smart Home Appliance", category: "Appliances", desc: "Home Appliance", currPrice: "₹2,499", oldPrice: "₹4,999", discount: "50% off", image: "Appliance.jpg", link: "#", badge: "Trending", specs: ["Power Consumption: Energy Efficient", "Material: ABS Food Grade Plastic", "Warranty: 1 Year Manufacturer Warranty", "Usage: Daily Home Utility"] }
+        ];
+
+        function getProducts() {
+            let stored = localStorage.getItem('iq_products');
+            if (!stored) {
+                localStorage.setItem('iq_products', JSON.stringify(defaultProducts));
+                return defaultProducts;
+            }
+            return JSON.parse(stored);
+        }
+
+        function loadWishlist() {
+            let products = getProducts();
+            let container = document.getElementById('wishlistContainer');
+            let wishlistIds = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            let likedProducts = products.filter(p => wishlistIds.includes(p.id));
+
+            container.innerHTML = "";
+            if (likedProducts.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #777; padding: 40px; width: 100%;">Your wishlist is empty! ❤</p>`;
+                return;
+            }
+
+            likedProducts.forEach(p => {
+                let card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <span class="badge">${p.badge}</span>
+                    <button class="wishlist-btn" onclick="removeFromWishlist(${p.id})"><i class="fa-solid fa-heart"></i></button>
+                    <img src="${p.image}" alt="${p.name}" onclick="window.location.replace('product-detail.html?id=${p.id}')">
+                    <div>
+                        <a onclick="window.location.replace('product-detail.html?id=${p.id}')" class="product-name">${p.name}</a>
+                        <div class="product-desc">${p.desc}</div>
+                        <div class="price-box">
+                            <span class="current-price">${p.currPrice}</span>
+                            <span class="old-price">${p.oldPrice}</span>
+                            <span class="discount">${p.discount}</span>
+                        </div>
+                    </div>
+                    <a onclick="window.location.replace('product-detail.html?id=${p.id}')" class="buy-btn">View Details</a>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function removeFromWishlist(id) {
+            let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            wishlist = wishlist.filter(item => item !== id);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            loadWishlist();
+        }
+
+        window.addEventListener('pageshow', function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            loadWishlist();
+        });
+    </script>
+</body>
+</html>

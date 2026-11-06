@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - IQDeals</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; width: 100%; min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f3f6; color: #333; transition: background 0.3s, color 0.3s; }
+
+        body.dark-mode { background-color: #121212 !important; color: #e0e0e0 !important; }
+        body.dark-mode header, body.dark-mode .detail-card, body.dark-mode .bottom-nav, body.dark-mode .search-section, body.dark-mode .search-box, body.dark-mode .related-card {
+            background-color: #1e1e1e !important; color: #fff !important; border-color: #333 !important;
+        }
+        body.dark-mode .product-title, body.dark-mode .current-price, body.dark-mode .back-btn, body.dark-mode .page-title, body.dark-mode .related-title, body.dark-mode .related-name { color: #fff !important; }
+        body.dark-mode .product-desc-full, body.dark-mode #pSpecs, body.dark-mode .related-desc { color: #aaa !important; }
+        body.dark-mode .search-box input { color: #fff !important; }
+        body.dark-mode .search-suggestions { background: #1e1e1e !important; border-color: #333 !important; }
+        body.dark-mode .suggestion-item { color: #fff !important; border-bottom: 1px solid #2a2a2a !important; }
+        body.dark-mode .suggestion-item:hover { background: #2a2a2a !important; }
+        body.dark-mode .specs-section { border-color: #333 !important; }
+
+        header { background: #fff; padding: 12px 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        .back-btn { font-size: 18px; color: #333; text-decoration: none; cursor: pointer; }
+        .page-title { font-size: 18px; font-weight: bold; }
+
+        .search-section { background: #fff; padding: 10px 15px; width: 100%; position: relative; }
+        .search-container { position: relative; width: 100%; }
+        .search-box {
+            display: flex; background: #f0f5ff; border-radius: 8px;
+            border: 1px solid #c2e0ff; overflow: hidden; align-items: center; padding: 0 10px; width: 100%;
+        }
+        .search-box i { color: #2874f0; font-size: 16px; margin-right: 8px; }
+        .search-box input { flex: 1; padding: 10px 5px; border: none; outline: none; font-size: 14px; background: transparent; color: #333; width: 100%; }
+
+        .search-suggestions {
+            position: absolute; top: 100%; left: 0; right: 0; background: #fff;
+            border-radius: 0 0 8px 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 220px; overflow-y: auto; z-index: 1001; display: none; text-align: left;
+        }
+        .suggestion-item { padding: 10px 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f1f1f1; cursor: pointer; text-decoration: none; color: #333; }
+        .suggestion-item:hover { background: #f8f9fa; }
+        .suggestion-item img { width: 35px; height: 35px; object-fit: contain; }
+
+        .container { padding: 15px; max-width: 800px; margin: 0 auto; padding-bottom: 70px; }
+        .detail-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; position: relative; margin-bottom: 20px; }
+        .detail-card img { width: 100%; max-height: 260px; object-fit: contain; margin-bottom: 15px; }
+        
+        .badge { position: absolute; top: 15px; left: 15px; background: #ff4757; color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 3px; font-weight: bold; z-index: 2; }
+        .badge.best { background: #2ed573; }
+
+        .wishlist-btn {
+            position: absolute; top: 15px; right: 15px; background: rgba(240,240,240,0.9);
+            border: none; border-radius: 50%; width: 34px; height: 34px; display: flex;
+            align-items: center; justify-content: center; cursor: pointer; z-index: 2; font-size: 18px; color: #888;
+        }
+        .wishlist-btn.active { color: #ff4757; }
+
+        .product-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; text-align: left; color: #212121; }
+        .product-desc-full { font-size: 13px; color: #666; margin-bottom: 15px; text-align: left; line-height: 1.4; }
+
+        .price-box { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .current-price { font-size: 20px; font-weight: bold; color: #212121; }
+        .old-price { font-size: 13px; color: #878787; text-decoration: line-through; }
+        .discount { font-size: 13px; color: #388e3c; font-weight: bold; }
+
+        .buy-now-btn { display: block; width: 100%; background: #2874f0; color: #fff; text-align: center; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 15px; }
+
+        .specs-section { text-align: left; border-top: 1px solid #eee; padding-top: 12px; }
+        .specs-header { font-weight: bold; font-size: 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: #2874f0; }
+        .specs-list { margin: 0; padding-left: 18px; font-size: 12px; color: #555; line-height: 1.6; display: none; }
+        .specs-list.open { display: block; }
+
+        .related-section { margin-top: 20px; }
+        .related-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; text-align: left; color: #212121; }
+        .related-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .related-grid::-webkit-scrollbar { display: none; }
+        .related-card { background: #fff; padding: 10px; border: 1px solid #e0e0e0; border-radius: 6px; min-width: 140px; flex: 0 0 140px; text-align: left; cursor: pointer; }
+        .related-card img { width: 100%; height: 90px; object-fit: contain; margin-bottom: 6px; }
+        .related-name { font-size: 12px; font-weight: 600; color: #212121; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .related-price { font-size: 12px; font-weight: bold; color: #212121; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 8px 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.05); z-index: 1000; }
+        .nav-item { text-align: center; text-decoration: none; color: #878787; font-size: 10px; cursor: pointer; }
+        .nav-item i { font-size: 18px; display: block; margin-bottom: 2px; }
+        .nav-item.active { color: #2874f0; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); }
+    </script>
+
+    <header>
+        <a onclick="window.location.replace('index.html')" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="page-title">Product Details</div>
+    </header>
+
+    <div class="search-section">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Search products, brands..." onkeyup="handleSearch()">
+            </div>
+            <div id="searchSuggestions" class="search-suggestions"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="detail-card" id="detailCard">
+            <span id="pBadge" class="badge"></span>
+            <button class="wishlist-btn" id="pWishlistBtn" onclick="toggleDetailWishlist()"><i class="fa-solid fa-heart"></i></button>
+            <img id="pImg" src="" alt="">
+            <div class="product-title" id="pTitle"></div>
+            <div class="product-desc-full" id="pDesc"></div>
+            <div class="price-box">
+                <span class="current-price" id="pCurrPrice"></span>
+                <span class="old-price" id="pOldPrice"></span>
+                <span class="discount" id="pDiscount"></span>
+            </div>
+            <a id="pBuyBtn" href="#" target="_blank" class="buy-now-btn">Buy Now on Store</a>
+            
+            <div class="specs-section">
+                <div class="specs-header" onclick="toggleSpecs()">
+                    <span>More Details & Specifications</span>
+                    <i class="fa-solid fa-chevron-down" id="specIcon"></i>
+                </div>
+                <ul class="specs-list" id="pSpecs"></ul>
+            </div>
+        </div>
+
+        <div class="related-section">
+            <div class="related-title">Similar Products</div>
+            <div class="related-grid" id="relatedContainer"></div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a onclick="window.location.replace('index.html')" class="nav-item"><i class="fa-solid fa-house"></i>Home</a>
+        <a onclick="window.location.replace('all-products.html')" class="nav-item"><i class="fa-solid fa-layer-group"></i>Categories</a>
+        <a onclick="window.location.replace('wishlist.html')" class="nav-item"><i class="fa-solid fa-heart"></i>Wishlist</a>
+        <a onclick="window.location.replace('setting.html')" class="nav-item"><i class="fa-solid fa-gear"></i>Settings</a>
+    </div>
+
+    <script>
+        const defaultProducts = [
+            { id: 1, name: "allons TWS Earbuds", category: "Earphones", desc: "Wireless Earbuds with high bass and clear sound quality.", currPrice: "₹299", oldPrice: "₹1,500", discount: "60% off", image: "twn.jpg", link: "https://fktr.in/4d0N4zs", badge: "Trending", specs: ["Bluetooth Version: v5.3", "Battery Playtime: Up to 30 Hours", "Charging Type: Type-C Fast Charging", "Water Resistance: IPX4 Splash Proof"] },
+            { id: 2, name: "Oppo K14x 5G", category: "Smartphones", desc: "6GB RAM | 128GB Storage | 6500mAh Battery with 45W Flash Charge.", currPrice: "₹22,999", oldPrice: "₹25,000", discount: "20% off", image: "Oppo.jpg", link: "https://fktr.in/jTC88j9", badge: "Best Seller", specs: ["Display: 6.72 inch FHD+ Display", "RAM & Storage: 6GB RAM | 128GB ROM", "Processor: MediaTek Dimensity 6300 5G", "Battery: 6500mAh with 45W Fast Charge"] },
+            { id: 3, name: "Genuine Leather Jacket", category: "Fesion", desc: "Premium quality leather jacket for men with stylish finish.", currPrice: "₹999", oldPrice: "₹1,999", discount: "50% off", image: "Jacket.jpg", link: "#", badge: "Trending", specs: ["Material: 100% Pure Leather", "Fit Type: Regular Fit", "Sleeve Type: Long Sleeve", "Occasion: Casual & Biker Style"] },
+            { id: 4, name: "NIKE PRECISION 8", category: "Fesion", desc: "Basketball Shoes For Men (Black) - Designed for peak performance.", currPrice: "₹3,990", oldPrice: "₹4,800", discount: "28% off", image: "Sho.jpg", link: "#", badge: "Best Seller", specs: ["Sole Material: Rubber Grip Sole", "Closure: Lace-Up", "Ideal For: Basketball & Running", "Color: Black / Red"] },
+            { id: 5, name: "Lenovo AMD Ryzen 7 7735HS", category: "Laptops", desc: "16 GB/512 GB SSD/Windows 11 Home Laptop (14 inch, Graphite Black, 1.42 kg, With MS Office)", currPrice: "₹95,990", oldPrice: "₹1,66,892", discount: "42% off", image: "Laptop.jpg", link: "#", badge: "Best Seller", specs: ["Processor: AMD Ryzen 7 7735HS", "RAM & Storage: 16 GB RAM / 512 GB SSD", "Operating System: Windows 11 Home with MS Office", "Display & Weight: 14 inch | Graphite Black | 1.42 kg"] },
+            { id: 6, name: "Smart Fitness Watch", category: "Smartwatches", desc: "Fitness Tracking Smartwatch with multiple sports modes.", currPrice: "₹1,999", oldPrice: "₹3,999", discount: "50% off", image: "Watch.jpg", link: "#", badge: "Trending", specs: ["Display: 1.83 inch HD Touch Screen", "Health Tracking: Heart Rate & SpO2", "Battery Life: Up to 7 Days Backup", "Connectivity: Bluetooth Calling Support"] },
+            { id: 7, name: "Smart Home Appliance", category: "Appliances", desc: "Efficient smart home appliance for daily use.", currPrice: "₹2,499", oldPrice: "₹4,999", discount: "50% off", image: "Appliance.jpg", link: "#", badge: "Trending", specs: ["Power Consumption: Energy Efficient", "Material: ABS Food Grade Plastic", "Warranty: 1 Year Manufacturer Warranty", "Usage: Daily Home Utility"] }
+        ];
+
+        function getProducts() {
+            let stored = localStorage.getItem('iq_products');
+            if (!stored) {
+                localStorage.setItem('iq_products', JSON.stringify(defaultProducts));
+                return defaultProducts;
+            }
+            return JSON.parse(stored);
+        }
+
+        let currentProductId = null;
+
+        function loadProductDetails() {
+            let products = getProducts();
+            const urlParams = new URLSearchParams(window.location.search);
+            currentProductId = parseInt(urlParams.get('id'));
+            const p = products.find(item => item.id === currentProductId);
+
+            if (p) {
+                document.getElementById('pImg').src = p.image;
+                document.getElementById('pTitle').innerText = p.name;
+                document.getElementById('pDesc').innerText = p.desc;
+                document.getElementById('pCurrPrice').innerText = p.currPrice;
+                document.getElementById('pOldPrice').innerText = p.oldPrice;
+                document.getElementById('pDiscount').innerText = p.discount;
+                document.getElementById('pBuyBtn').href = p.link || '#';
+                
+                const badgeEl = document.getElementById('pBadge');
+                badgeEl.innerText = p.badge;
+                badgeEl.className = p.badge === 'Best Seller' ? 'badge best' : 'badge';
+
+                let specsList = document.getElementById('pSpecs');
+                specsList.innerHTML = "";
+                if (p.specs && p.specs.length > 0) {
+                    p.specs.forEach(spec => {
+                        let li = document.createElement('li');
+                        li.innerText = spec;
+                        specsList.appendChild(li);
+                    });
+                }
+
+                let relatedContainer = document.getElementById('relatedContainer');
+                relatedContainer.innerHTML = "";
+                let relatedItems = products.filter(item => item.category === p.category && item.id !== p.id);
+                if (relatedItems.length === 0) {
+                    relatedItems = products.filter(item => item.id !== p.id).slice(0, 4);
+                }
+
+                relatedItems.forEach(rel => {
+                    let card = document.createElement('div');
+                    card.className = 'related-card';
+                    card.innerHTML = `
+                        <img src="${rel.image}" alt="${rel.name}">
+                        <div class="related-name">${rel.name}</div>
+                        <div class="related-price">${rel.currPrice}</div>
+                    `;
+                    card.onclick = () => window.location.replace("product-detail.html?id=" + rel.id);
+                    relatedContainer.appendChild(card);
+                });
+
+                let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                let btn = document.getElementById('pWishlistBtn');
+                if (wishlist.includes(currentProductId)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            } else {
+                document.getElementById('detailCard').innerHTML = `<h3>Product Not Found!</h3><br><a onclick="window.location.replace('index.html')" class="buy-now-btn">Go to Home</a>`;
+            }
+        }
+
+        function toggleDetailWishlist() {
+            if (!currentProductId) return;
+            let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            let btn = document.getElementById('pWishlistBtn');
+            let index = wishlist.indexOf(currentProductId);
+
+            if (index > -1) {
+                wishlist.splice(index, 1);
+                btn.classList.remove('active');
+            } else {
+                wishlist.push(currentProductId);
+                btn.classList.add('active');
+            }
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+
+        function toggleSpecs() {
+            let list = document.getElementById('pSpecs');
+            let icon = document.getElementById('specIcon');
+            list.classList.toggle('open');
+            if (list.classList.contains('open')) {
+                icon.className = "fa-solid fa-chevron-up";
+            } else {
+                icon.className = "fa-solid fa-chevron-down";
+            }
+        }
+
+        function handleSearch() {
+            let products = getProducts();
+            let query = document.getElementById('searchInput').value.toLowerCase().trim();
+            let suggestionsBox = document.getElementById('searchSuggestions');
+            if (query === "") {
+                suggestionsBox.style.display = "none";
+                return;
+            }
+            let matched = products.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+            if (matched.length > 0) {
+                suggestionsBox.style.display = "block";
+                suggestionsBox.innerHTML = "";
+                matched.forEach(item => {
+                    let div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `<img src="${item.image}" alt=""><div style="font-size:13px;"><div style="font-weight:600;">${item.name}</div><div style="color:#2874f0; font-size:11px;">${item.currPrice}</div></div>`;
+                    div.onclick = () => window.location.replace("product-detail.html?id=" + item.id);
+                    suggestionsBox.appendChild(div);
+                });
+            } else {
+                suggestionsBox.style.display = "block";
+                suggestionsBox.innerHTML = `<div style="padding: 10px 15px; color: #777; font-size: 13px;">No suggestions found</div>`;
+            }
+        }
+
+        window.onclick = function(e) {
+            if (!e.target.closest('.search-container')) {
+                let box = document.getElementById('searchSuggestions');
+                if(box) box.style.display = "none";
+            }
+        };
+
+        window.addEventListener('pageshow', function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            loadProductDetails();
+        });
+    </script>
+</body>
+</html>

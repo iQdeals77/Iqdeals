@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - IQDeals</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; width: 100%; min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f3f6; color: #333; }
+        
+        header { background: #2874f0; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo { font-size: 18px; font-weight: bold; }
+        .back-home { color: #fff; text-decoration: none; font-size: 14px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 4px; }
+
+        .container { padding: 20px; max-width: 800px; margin: 0 auto; padding-bottom: 50px; }
+        
+        .admin-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #2874f0; display: flex; align-items: center; gap: 8px; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #555; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #2874f0; }
+
+        .btn-submit { background: #2874f0; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .btn-submit:hover { background: #1a5dc8; }
+
+        .product-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .product-list-item:last-child { border-bottom: none; }
+        .p-info { display: flex; align-items: center; gap: 10px; }
+        .p-info img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; border: 1px solid #eee; }
+        .p-name { font-size: 13px; font-weight: 600; color: #333; }
+        .p-price { font-size: 11px; color: #2874f0; font-weight: bold; }
+        
+        .btn-delete { background: #ff4757; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><i class="fa-solid fa-lock"></i> IQDeals Admin Panel</div>
+        <a href="index.html" class="back-home"><i class="fa-solid fa-house"></i> Go to Website</a>
+    </header>
+
+    <div class="container">
+        <!-- Add Product Form -->
+        <div class="admin-card">
+            <div class="card-title"><i class="fa-solid fa-plus-circle"></i> Add New Product</div>
+            <form id="addProductForm" onsubmit="addNewProduct(event)">
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="pName" placeholder="e.g. Lenovo Laptop / Cotton Jacket" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="pCategory" onchange="updateSpecFields()">
+                        <option value="Smartphones">Mobiles</option>
+                        <option value="Laptops">Laptops</option>
+                        <option value="Earphones">Earphones</option>
+                        <option value="Smartwatches">Watches</option>
+                        <option value="Appliances">Appliances</option>
+                        <option value="Fesion">Clothing / Accessories</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Short Description (Card par dikhega)</label>
+                    <input type="text" id="pDesc" placeholder="e.g. 16GB RAM | 512GB SSD" required>
+                </div>
+                <div class="form-group">
+                    <label>Current Price</label>
+                    <input type="text" id="pCurrPrice" placeholder="e.g. ₹95,990" required>
+                </div>
+                <div class="form-group">
+                    <label>Old Price (MRP)</label>
+                    <input type="text" id="pOldPrice" placeholder="e.g. ₹1,66,892" required>
+                </div>
+                <div class="form-group">
+                    <label>Discount</label>
+                    <input type="text" id="pDiscount" placeholder="e.g. 42% off" required>
+                </div>
+                <div class="form-group">
+                    <label>Image File Name (Folder wali image ka naam)</label>
+                    <input type="text" id="pImage" placeholder="e.g. Laptop.jpg" value="Laptop.jpg" required>
+                </div>
+                <div class="form-group">
+                    <label>Affiliate / Buy Link</label>
+                    <input type="text" id="pLink" placeholder="e.g. https://fktr.in/..." value="#" required>
+                </div>
+                <div class="form-group">
+                    <label>Badge</label>
+                    <select id="pBadge">
+                        <option value="Trending">Trending</option>
+                        <option value="Best Seller">Best Seller</option>
+                    </select>
+                </div>
+
+                <!-- Specifications Fields -->
+                <div class="form-group">
+                    <label id="specLabel1">Specification 1</label>
+                    <input type="text" id="spec1" placeholder="e.g. Processor / Material" required>
+                </div>
+                <div class="form-group">
+                    <label id="specLabel2">Specification 2</label>
+                    <input type="text" id="spec2" placeholder="e.g. RAM / Fit Type" required>
+                </div>
+                <div class="form-group">
+                    <label id="specLabel3">Specification 3</label>
+                    <input type="text" id="spec3" placeholder="e.g. OS / Style" required>
+                </div>
+                <div class="form-group">
+                    <label id="specLabel4">Specification 4</label>
+                    <input type="text" id="spec4" placeholder="e.g. Display / Details" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Upload & Add Product</button>
+            </form>
+        </div>
+
+        <!-- Manage Products -->
+        <div class="admin-card">
+            <div class="card-title"><i class="fa-solid fa-box-archive"></i> Manage / Delete Products</div>
+            <div id="adminProductList"></div>
+        </div>
+    </div>
+
+    <script>
+        const defaultProducts = [
+            { id: 1, name: "allons TWS Earbuds", category: "Earphones", desc: "Wireless Earbuds", currPrice: "₹299", oldPrice: "₹1,500", discount: "60% off", image: "twn.jpg", link: "https://fktr.in/4d0N4zs", badge: "Trending", specs: ["Bluetooth Version: v5.3", "Battery Playtime: Up to 30 Hours", "Charging Type: Type-C Fast Charging", "Water Resistance: IPX4 Splash Proof"] },
+            { id: 2, name: "Oppo K14x 5G", category: "Smartphones", desc: "6GB RAM | 128GB Storage", currPrice: "₹22,999", oldPrice: "₹25,000", discount: "20% off", image: "Oppo.jpg", link: "https://fktr.in/jTC88j9", badge: "Best Seller", specs: ["Display: 6.72 inch FHD+ Display", "RAM & Storage: 6GB RAM | 128GB ROM", "Processor: MediaTek Dimensity 6300 5G", "Battery: 6500mAh with 45W Fast Charge"] },
+            { id: 3, name: "Genuine Leather Jacket", category: "Fesion", desc: "For premium men", currPrice: "₹999", oldPrice: "₹1,999", discount: "50% off", image: "Jacket.jpg", link: "#", badge: "Trending", specs: ["Material: 100% Pure Leather", "Fit Type: Regular Fit", "Sleeve Type: Long Sleeve", "Occasion: Casual & Biker Style"] },
+            { id: 4, name: "NIKE PRECISION 8", category: "Fesion", desc: "Basketball Shoes For Men", currPrice: "₹3,990", oldPrice: "₹4,800", discount: "28% off", image: "Sho.jpg", link: "#", badge: "Best Seller", specs: ["Sole Material: Rubber Grip Sole", "Closure: Lace-Up", "Ideal For: Basketball & Running", "Color: Black / Red"] },
+            { id: 5, name: "Lenovo AMD Ryzen 7 7735HS", category: "Laptops", desc: "16 GB/512 GB SSD/Win 11", currPrice: "₹95,990", oldPrice: "₹1,66,892", discount: "42% off", image: "Laptop.jpg", link: "#", badge: "Best Seller", specs: ["Processor: AMD Ryzen 7 7735HS", "RAM & Storage: 16 GB RAM / 512 GB SSD", "Operating System: Windows 11 Home with MS Office", "Display & Weight: 14 inch | Graphite Black | 1.42 kg"] },
+            { id: 6, name: "Smart Fitness Watch", category: "Smartwatches", desc: "Fitness Tracking Smartwatch", currPrice: "₹1,999", oldPrice: "₹3,999", discount: "50% off", image: "Watch.jpg", link: "#", badge: "Trending", specs: ["Display: 1.83 inch HD Touch Screen", "Health Tracking: Heart Rate & SpO2", "Battery Life: Up to 7 Days Backup", "Connectivity: Bluetooth Calling Support"] },
+            { id: 7, name: "Smart Home Appliance", category: "Appliances", desc: "Home Appliance", currPrice: "₹2,499", oldPrice: "₹4,999", discount: "50% off", image: "Appliance.jpg", link: "#", badge: "Trending", specs: ["Power Consumption: Energy Efficient", "Material: ABS Food Grade Plastic", "Warranty: 1 Year Manufacturer Warranty", "Usage: Daily Home Utility"] }
+        ];
+
+        function getStoredProducts() {
+            let stored = localStorage.getItem('iq_products');
+            if (!stored || stored === "[]") {
+                localStorage.setItem('iq_products', JSON.stringify(defaultProducts));
+                return defaultProducts;
+            }
+            try {
+                let parsed = JSON.parse(stored);
+                if (!Array.isArray(parsed) || parsed.length === 0) {
+                    localStorage.setItem('iq_products', JSON.stringify(defaultProducts));
+                    return defaultProducts;
+                }
+                return parsed;
+            } catch (e) {
+                localStorage.setItem('iq_products', JSON.stringify(defaultProducts));
+                return defaultProducts;
+            }
+        }
+
+        function updateSpecFields() {
+            let cat = document.getElementById('pCategory').value;
+            let l1 = document.getElementById('specLabel1');
+            let l2 = document.getElementById('specLabel2');
+            let l3 = document.getElementById('specLabel3');
+            let l4 = document.getElementById('specLabel4');
+
+            if (cat === 'Fesion') {
+                l1.innerText = "Material / Fabric";
+                l2.innerText = "Fit Type";
+                l3.innerText = "Occasion / Style";
+                l4.innerText = "Details / Care";
+            } else {
+                l1.innerText = "Processor / Spec 1";
+                l2.innerText = "RAM & Storage / Spec 2";
+                l3.innerText = "Operating System / Spec 3";
+                l4.innerText = "Display & Battery / Spec 4";
+            }
+        }
+
+        function renderAdminList() {
+            let products = getStoredProducts();
+            let listContainer = document.getElementById('adminProductList');
+            listContainer.innerHTML = "";
+
+            if (products.length === 0) {
+                listContainer.innerHTML = `<p style="text-align:center; color:#777; font-size:13px;">No products found.</p>`;
+                return;
+            }
+
+            products.forEach(p => {
+                let item = document.createElement('div');
+                item.className = 'product-list-item';
+                item.innerHTML = `
+                    <div class="p-info">
+                        <img src="${p.image}" alt="">
+                        <div>
+                            <div class="p-name">${p.name}</div>
+                            <div class="p-price">${p.currPrice} (${p.category})</div>
+                        </div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        function addNewProduct(e) {
+            e.preventDefault();
+            let products = getStoredProducts();
+            let newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+            
+            let s1 = document.getElementById('spec1').value.trim();
+            let s2 = document.getElementById('spec2').value.trim();
+            let s3 = document.getElementById('spec3').value.trim();
+            let s4 = document.getElementById('spec4').value.trim();
+
+            let newProd = {
+                id: newId,
+                name: document.getElementById('pName').value.trim(),
+                category: document.getElementById('pCategory').value,
+                desc: document.getElementById('pDesc').value.trim(),
+                currPrice: document.getElementById('pCurrPrice').value.trim(),
+                oldPrice: document.getElementById('pOldPrice').value.trim(),
+                discount: document.getElementById('pDiscount').value.trim(),
+                image: document.getElementById('pImage').value.trim(),
+                link: document.getElementById('pLink').value.trim(),
+                badge: document.getElementById('pBadge').value,
+                specs: [s1, s2, s3, s4]
+            };
+
+            products.push(newProd);
+            localStorage.setItem('iq_products', JSON.stringify(products));
+            
+            alert("Product successfully added and live on website!");
+            document.getElementById('addProductForm').reset();
+            updateSpecFields();
+            renderAdminList();
+        }
+
+        function deleteProduct(id) {
+            let products = getStoredProducts();
+            products = products.filter(p => p.id !== id);
+            localStorage.setItem('iq_products', JSON.stringify(products));
+            renderAdminList();
+        }
+
+        window.onload = function() {
+            updateSpecFields();
+            renderAdminList();
+        };
+    </script>
+</body>
+</html>
